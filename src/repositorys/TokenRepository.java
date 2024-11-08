@@ -38,7 +38,7 @@ public class TokenRepository {
 	    List<Token> tokens = new ArrayList<>();
 	    try {
 	        con = utils.ConnectDB.getConnection();
-	        String query = "SELECT * FROM tokens ORDER BY date DESC";  // Lấy token theo thứ tự mới nhất
+	        String query = "SELECT * FROM tokens ORDER BY date DESC";  
 	        ps = con.prepareStatement(query);
 	        ResultSet rs = ps.executeQuery();
 
@@ -64,8 +64,8 @@ public class TokenRepository {
 	        con = utils.ConnectDB.getConnection();
 	        String query = "SELECT * FROM tokens WHERE name LIKE ? OR symbol LIKE ?";
 	        ps = con.prepareStatement(query);
-	        ps.setString(1, "%" + keyword + "%"); // Tìm theo từ khóa trong 'name'
-	        ps.setString(2, "%" + keyword + "%"); // Tìm theo từ khóa trong 'symbol'
+	        ps.setString(1, "%" + keyword + "%"); 
+	        ps.setString(2, "%" + keyword + "%");
 	        ResultSet rs = ps.executeQuery();
 
 	        while (rs.next()) {

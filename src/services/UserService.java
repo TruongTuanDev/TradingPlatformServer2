@@ -1,5 +1,8 @@
 package services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dto.SignUpForm;
 import model.User;
 import repositorys.UserRepository;
@@ -22,5 +25,10 @@ public class UserService {
 		  isValid = userRepository.checklogin(userName,password);
 	      return isValid;
 	    }
-	
+	public List<User> getListUsers() {
+		userRepository = new UserRepository();
+	    List<User> userList = new ArrayList<>(); // Danh sách để lưu tất cả người dùng
+	    userList = userRepository.findAll();
+	    return userList; // Trả về danh sách người dùng
+	}
 }

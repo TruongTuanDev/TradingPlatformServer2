@@ -12,7 +12,7 @@ public class User {
     private int idWallets;
     private int idWatchlist;
     private String address;
-
+    private String id;
     public User() {
     }
     
@@ -39,8 +39,38 @@ public class User {
         this.idWatchlist = idWatchlist;
         this.address = address;
     }
+	
+	
+	
+    public User(String id,String username, String password, String email, String phonenumber, boolean isOnline, String fullname,
+			String role, String sex, int idWallets, int idWatchlist, String address) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.phonenumber = phonenumber;
+		this.isOnline = isOnline;
+		this.fullname = fullname;
+		this.role = role;
+		this.sex = sex;
+		this.idWallets = idWallets;
+		this.idWatchlist = idWatchlist;
+		this.address = address;
+	}
 
-    public String getUsername() {
+
+	public String getId() {
+		return id;
+	}
+
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+	public String getUsername() {
         return username;
     }
 

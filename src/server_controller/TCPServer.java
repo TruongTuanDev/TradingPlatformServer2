@@ -17,7 +17,9 @@ public class TCPServer extends Thread {
     private boolean isRunning = true;
     private JLabel clientCountLabel;  // Nhãn hiển thị số lượng khách hàng
     private JLabel activeStatusLabel; // Nhãn hiển thị trạng thái server
+    private ServerSocket serverSocket;
     private static final int PORT = 12345;
+    
     public TCPServer(DefaultTableModel tableModel, JLabel clientCountLabel, JLabel activeStatusLabel) {
         this.tableModel = tableModel;
         this.clientCountLabel = clientCountLabel;
@@ -27,7 +29,8 @@ public class TCPServer extends Thread {
 
     @Override
     public void run() {
-        try(ServerSocket serverSocket = new ServerSocket(PORT)) {    
+        try {    
+        	serverSocket = new ServerSocket(PORT);
             System.out.println("Server started. Listening on port 12345...");
 
             // Cập nhật trạng thái server
@@ -63,15 +66,15 @@ public class TCPServer extends Thread {
         updateClientCount();
     }
 
-//    public void stopServer() {
-//        isRunning = false;
-//        try {
-//            for (Socket socket : clientSockets) {
-//                socket.close();
-//            }
-//            serverSocket.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void stopServer() {
+        isRunning = false;
+        try {
+            for (Socket socket : clientSockets) {
+                socket.close();
+            }
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
