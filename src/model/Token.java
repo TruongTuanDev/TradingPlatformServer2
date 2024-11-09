@@ -1,6 +1,8 @@
 package model;
 
-public class Token {
+import java.io.Serializable;
+
+public class Token implements Serializable{
 	private int token_id;
 	private String name;
 	private String symbol;

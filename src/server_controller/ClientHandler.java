@@ -3,10 +3,16 @@ package server_controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
+
 import javax.swing.table.DefaultTableModel;
+
+import model.Token;
 import model.User;
+import services.TokenService;
 import services.UserService;
 
 public class ClientHandler extends Thread {
@@ -18,6 +24,7 @@ public class ClientHandler extends Thread {
     private String connectTime;
     private TCPServer server;
     private UserService userService;
+    private TokenService tokenService;
 
     public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
         this.clientSocket = socket;
@@ -30,9 +37,11 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         userService = new UserService();
+        tokenService = new TokenService();
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
+            ObjectOutputStream objectWriter = new ObjectOutputStream(clientSocket.getOutputStream()); 
             String message;
             while ((message = in.readLine()) != null) {
                 System.out.println("Client gửi: " + message);
@@ -69,7 +78,17 @@ public class ClientHandler extends Thread {
                             out.println("register-false");
                         }
                         break;
-
+                    case "request-getlistcoin" :
+                    	List<Token> tokens = tokenService.getListTokens();
+                    	if(tokens != null) {
+                    		objectWriter.writeObject(tokens);
+                    		objectWriter.flush();
+                    		out.println("getlistcoin-success");
+                        } else {
+                            out.println("getlistcoin-false");
+                        }
+                    	break;
+                    	
                     case "request-check-username":
                         // Thực hiện kiểm tra tên người dùng (nếu cần)
                         break;
