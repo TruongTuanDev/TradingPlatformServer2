@@ -14,8 +14,6 @@ public class MainServerUI extends JFrame {
 
         // Tạo JTabbedPane
         JTabbedPane tabbedPane = new JTabbedPane();
-        
-
         // Tab 1: Danh sách người dùng
         UserListPanel userListPanel = new UserListPanel();
 //        userListPanel.setLayout(new BorderLayout());
