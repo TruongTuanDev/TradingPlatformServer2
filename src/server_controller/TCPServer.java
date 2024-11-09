@@ -59,13 +59,11 @@ public class TCPServer extends Thread {
     public synchronized void updateClientCount() {
         clientCountLabel.setText("Number Client: " + clientSockets.size());
     }
-
     // Phương thức loại bỏ client khi ngắt kết nối
     public synchronized void removeClient(Socket clientSocket) {
         clientSockets.remove(clientSocket);
         updateClientCount();
     }
-
     public void stopServer() {
         isRunning = false;
         try {
