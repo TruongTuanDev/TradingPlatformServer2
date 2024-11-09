@@ -3,16 +3,13 @@ package views;
 import javax.swing.*;
 import java.awt.*;
 
-public class AdminDashboard extends JFrame {
+public class AdminDashboard extends JPanel {
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
     public AdminDashboard() {
         // Thiết lập cửa sổ lớn hơn và giao diện tươi sáng
-        setTitle("Admin Dashboard");
-        setSize(1200, 800); // Kích thước lớn hơn
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+       
 
         // CardLayout để chuyển giữa các trang
         cardLayout = new CardLayout();
@@ -21,13 +18,12 @@ public class AdminDashboard extends JFrame {
         // Thêm hai trang JPanel vào mainPanel
         mainPanel.add(createCoinListPanel(), "coinList");
         mainPanel.add(createClientListPanel(), "clientList");
+
         // Tạo sidebar điều hướng với icon và màu sắc tươi sáng
         JPanel sidebarPanel = createSidebar();
 
         // Thêm vào JFrame
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(sidebarPanel, BorderLayout.WEST);
-        getContentPane().add(mainPanel, BorderLayout.CENTER);
+
     }
 
     // Sidebar điều hướng với icon và màu sắc tươi sáng
@@ -57,15 +53,35 @@ public class AdminDashboard extends JFrame {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setPreferredSize(new Dimension(200, 50));
 
-        // Thêm icon vào nút
-        ImageIcon icon = new ImageIcon(iconPath);
-        button.setIcon(icon);
+        // Thêm icon vào nút và xử lý trường hợp thiếu icon
+        try {
+            ImageIcon icon = new ImageIcon(iconPath);
+            button.setIcon(icon);
+        } catch (Exception e) {
+            System.out.println("Icon not found: " + iconPath);
+        }
 
-        return button; // Sử dụng màu mặc định cho nút (bỏ màu sắc)
+        // Thêm hiệu ứng hover cho nút
+        button.setBackground(Color.WHITE); // Màu nền mặc định
+        button.setForeground(new Color(0, 102, 204)); // Màu chữ
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(220, 240, 255)); // Màu sáng khi hover
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(Color.WHITE); // Trở lại màu nền ban đầu
+            }
+        });
+
+        return button;
     }
 
     // Trang List Coin với thiết kế font chữ và màu sắc đẹp
- // Trang List Coin với thiết kế font chữ và màu sắc đẹp
     private JPanel createCoinListPanel() {
         JPanel coinPanel = new JPanel();
         coinPanel.setLayout(new BorderLayout());
@@ -77,24 +93,16 @@ public class AdminDashboard extends JFrame {
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel coinNameLabel = new JLabel("Coin Name:");
-        coinNameLabel.setFont(new Font("Arial", Font.BOLD, 16));
         JTextField coinNameField = new JTextField();
-        coinNameField.setFont(new Font("Arial", Font.PLAIN, 14));
-
         JLabel symbolLabel = new JLabel("Symbol:");
-        symbolLabel.setFont(new Font("Arial", Font.BOLD, 16));
         JTextField symbolField = new JTextField();
-        symbolField.setFont(new Font("Arial", Font.PLAIN, 14));
-
         JLabel currentPriceLabel = new JLabel("Current Price:");
-        currentPriceLabel.setFont(new Font("Arial", Font.BOLD, 16));
         JTextField currentPriceField = new JTextField();
-        currentPriceField.setFont(new Font("Arial", Font.PLAIN, 14));
-
         JLabel dateLabel = new JLabel("Date:");
-        dateLabel.setFont(new Font("Arial", Font.BOLD, 16));
         JTextField dateField = new JTextField();
-        dateField.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        setLabelFont(coinNameLabel, symbolLabel, currentPriceLabel, dateLabel);
+        setFieldFont(coinNameField, symbolField, currentPriceField, dateField);
 
         inputPanel.add(coinNameLabel);
         inputPanel.add(coinNameField);
@@ -108,9 +116,9 @@ public class AdminDashboard extends JFrame {
         JButton searchButton = new JButton("Search");
         searchButton.setFont(new Font("Arial", Font.BOLD, 16));
         inputPanel.add(searchButton);
-        inputPanel.add(new JLabel()); // chừa chỗ trống
+        inputPanel.add(new JLabel()); // Chừa chỗ trống
 
-        // Bảng danh sách coin với màu sắc tươi sáng
+        // Bảng danh sách coin
         String[] columns = {"Coin Name", "Symbol", "Current Price", "Date"};
         Object[][] data = {{"Bitcoin", "BTC", "$60,000", "2024-10-22"}, 
                            {"Ethereum", "ETH", "$4,000", "2024-10-22"}};
@@ -118,12 +126,13 @@ public class AdminDashboard extends JFrame {
         JScrollPane scrollPane = new JScrollPane(coinTable);
         coinTable.setFont(new Font("Arial", Font.PLAIN, 14));
         coinTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        scrollPane.getViewport().setBackground(new Color(240, 248, 255));
+
         coinPanel.add(inputPanel, BorderLayout.NORTH);
         coinPanel.add(scrollPane, BorderLayout.CENTER);
 
         return coinPanel;
     }
-
 
     // Trang List Client với thiết kế font chữ và màu sắc đẹp
     private JPanel createClientListPanel() {
@@ -137,9 +146,24 @@ public class AdminDashboard extends JFrame {
         JScrollPane scrollPane = new JScrollPane(clientTable);
         clientTable.setFont(new Font("Arial", Font.PLAIN, 14));
         clientTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        scrollPane.getViewport().setBackground(new Color(240, 248, 255));
 
         clientPanel.add(scrollPane, BorderLayout.CENTER);
         return clientPanel;
+    }
+
+    // Đặt font cho các JLabel
+    private void setLabelFont(JLabel... labels) {
+        for (JLabel label : labels) {
+            label.setFont(new Font("Arial", Font.BOLD, 16));
+        }
+    }
+
+    // Đặt font cho các JTextField
+    private void setFieldFont(JTextField... fields) {
+        for (JTextField field : fields) {
+            field.setFont(new Font("Arial", Font.PLAIN, 14));
+        }
     }
 
     public static void main(String[] args) {
