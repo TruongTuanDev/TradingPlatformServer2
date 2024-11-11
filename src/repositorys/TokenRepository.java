@@ -44,7 +44,7 @@ public class TokenRepository {
 
 	        while (rs.next()) {
 	            Token token = new Token();
-	            token.setToken_id(rs.getInt("token_id"));
+	            token.setToken_id(rs.getString("token_id"));
 	            token.setName(rs.getString("name"));
 	            token.setSymbol(rs.getString("symbol"));
 	            token.setCurrent_price(rs.getDouble("current_price"));
@@ -70,7 +70,7 @@ public class TokenRepository {
 
 	        while (rs.next()) {
 	            Token token = new Token();
-	            token.setToken_id(rs.getInt("token_id"));
+	            token.setToken_id(rs.getString("token_id"));
 	            token.setName(rs.getString("name"));
 	            token.setSymbol(rs.getString("symbol"));
 	            token.setCurrent_price(rs.getDouble("current_price"));

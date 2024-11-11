@@ -3,7 +3,11 @@ package model;
 import java.io.Serializable;
 
 public class Token implements Serializable{
-	private int token_id;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String token_id;
 	private String name;
 	private String symbol;
 	private double current_price;
@@ -12,7 +16,7 @@ public class Token implements Serializable{
 	private double quantity;
 	public Token() {
 	}
-	public Token(int token_id, String name, String symbol, double current_price, String date, double marketcap,
+	public Token(String token_id, String name, String symbol, double current_price, String date, double marketcap,
 			double quantity) {
 		super();
 		this.token_id = token_id;
@@ -24,10 +28,10 @@ public class Token implements Serializable{
 		this.quantity = quantity;
 	}
 
-	public int getToken_id() {
+	public String getToken_id() {
 		return token_id;
 	}
-	public void setToken_id(int token_id) {
+	public void setToken_id(String token_id) {
 		this.token_id = token_id;
 	}
 	public String getName() {
@@ -66,6 +70,12 @@ public class Token implements Serializable{
 	public void setQuantity(double quantity) {
 		this.quantity = quantity;
 	}
+	@Override
+	public String toString() {
+		return "Token [token_id=" + token_id + ", name=" + name + ", symbol=" + symbol + ", current_price="
+				+ current_price + ", date=" + date + ", marketcap=" + marketcap + ", quantity=" + quantity + "]";
+	}
+	
 	
 	
 }
