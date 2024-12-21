@@ -85,6 +85,41 @@ public class TokenRepository {
 	    return tokens;
 	}
 
+	public Token findTokenById(int id) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Token token = null;
 
+        try {
+            con = utils.ConnectDB.getConnection();
+            String query = "SELECT * FROM tokens WHERE token_id = ?";
+            ps = con.prepareStatement(query);
+            ps.setInt(1, id);  // Thiết lập giá trị `id` cho truy vấn
+            rs = ps.executeQuery();
 
+            if (rs.next()) {
+                token = new Token();
+                token.setToken_id(rs.getString("token_id"));
+                token.setName(rs.getString("name"));
+                token.setSymbol(rs.getString("symbol"));
+                token.setCurrent_price(rs.getDouble("current_price"));
+                token.setDate(rs.getString("date"));
+                token.setMarketcap(rs.getDouble("marketcap"));
+                token.setQuantity(rs.getDouble("quantity"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Đảm bảo đóng các tài nguyên
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return token;  // Trả về token hoặc null nếu không tìm thấy
+    }
 }

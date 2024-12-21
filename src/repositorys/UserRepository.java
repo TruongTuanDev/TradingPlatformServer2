@@ -85,5 +85,64 @@ public class UserRepository {
 	    
 	    return userList; // Trả về danh sách người dùng
 	}
+	public boolean updateStatus(String username, String password) {
+		boolean isValid = false;
+	    try {
+	        con = utils.ConnectDB.getConnection();
+	        String query = "UPDATE accounts SET is_online = ? WHERE username = ? AND password = ?";
+	        ps = con.prepareStatement(query);
+	        ps.setInt(1,1);
+	        ps.setString(2, username);
+	        ps.setString(3, password);
 
+	        int rowsUpdated = ps.executeUpdate();
+
+	        if (rowsUpdated > 0) {
+	        	isValid=true;
+	            System.out.println("User updated successfully.");
+	        } else {
+	            System.out.println("No user found with the specified id.");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (ps != null) ps.close();
+	            if (con != null) con.close();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	    return isValid;
+	}
+	public boolean updateStatusFalse(String username) {
+		boolean isValid = false;
+	    try {
+	        con = utils.ConnectDB.getConnection();
+	        String query = "UPDATE accounts SET is_online = ? WHERE username = ? ";
+	        ps = con.prepareStatement(query);
+	        ps.setInt(1,0);
+	        ps.setString(2, username);
+	       
+
+	        int rowsUpdated = ps.executeUpdate();
+
+	        if (rowsUpdated > 0) {
+	        	isValid=true;
+	            System.out.println("User updated successfully.");
+	        } else {
+	            System.out.println("No user found with the specified id.");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (ps != null) ps.close();
+	            if (con != null) con.close();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	    return isValid;
+	}
 }

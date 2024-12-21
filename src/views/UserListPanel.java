@@ -9,7 +9,8 @@ import java.util.List;
 
 public class UserListPanel extends JPanel {
     UserService userService;
-
+    public static JTable userTable;
+    private Object[][] data;
     public UserListPanel() {
         userService = new UserService();
         List<User> userList = userService.getListUsers();
@@ -21,7 +22,7 @@ public class UserListPanel extends JPanel {
         String[] columnNames = {"User ID", "Username", "Email", "Status"};
 
         // Chuẩn bị dữ liệu cho bảng
-        Object[][] data = new Object[userList.size()][4];
+        data = new Object[userList.size()][4];
         for (int i = 0; i < userList.size(); i++) {
             User user = userList.get(i);
             data[i][0] = user.getId();
@@ -31,7 +32,7 @@ public class UserListPanel extends JPanel {
         }
 
         // Tạo bảng và thêm dữ liệu
-        JTable userTable = new JTable(data, columnNames);
+         userTable = new JTable(data, columnNames);
 
         // Thay đổi kích thước chữ trong bảng
         userTable.setFont(new Font("Arial", Font.PLAIN, 16)); // Chữ trong bảng lớn hơn
@@ -50,5 +51,24 @@ public class UserListPanel extends JPanel {
 
         // Thêm bảng vào panel với BorderLayout.CENTER
         add(userScrollPane, BorderLayout.CENTER);
+        
     }
+    public void updateUserStatus(String username, boolean isOnline) {
+        for (int i = 0; i < data.length; i++) {
+        	System.out.print("kh đc");
+            if (data[i][1] == username) { // So sánh User ID
+            	System.out.print("đc");
+                data[i][3] = "Online" ;
+                remove(userTable); // Loại bỏ bảng cũ
+                userTable = new JTable(data, new String[] {"User ID", "Username", "Email", "Status"});
+                add(new JScrollPane(userTable), BorderLayout.CENTER);
+
+                revalidate(); // Làm mới layout
+                repaint();    // Vẽ lại giao diện// Cập nhật trạng thái
+                // Vẽ lại bảng để hiển thị thay đổi
+                break;
+            }
+        }
+    }
+    
 }
