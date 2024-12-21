@@ -6,12 +6,17 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
+import model.LoginResponse;
+import model.Order;
 import model.Token;
 import model.User;
+import repositorys.OrderRepository;
 import services.TokenService;
 import services.UserService;
 
@@ -25,6 +30,8 @@ public class ClientHandler extends Thread {
     private TCPServer server;
     private UserService userService;
     private TokenService tokenService;
+    private LoginResponse  loginResponse;
+    private OrderRepository orderRepository;
 
     public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
         this.clientSocket = socket;
@@ -37,6 +44,8 @@ public class ClientHandler extends Thread {
     public void run() {
         userService = new UserService();
         tokenService = new TokenService();
+        orderRepository = new OrderRepository();
+        
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ObjectOutputStream objectWriter = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -47,7 +56,7 @@ public class ClientHandler extends Thread {
                 String email = "";
                 String[] messageSplit = message.split(",");
                 int lengthMessage = messageSplit.length;
-                
+                String action = messageSplit[0] ;
                 String username = null;
                 String password = null;
                 if (lengthMessage > 1) {
@@ -59,30 +68,37 @@ public class ClientHandler extends Thread {
                     email = messageSplit[3];
                 }
 
-                Object[] row = {clientIP, username, email, connectTime};
+                Object[] row = {clientIP, username, action, connectTime};
                 tableModel.addRow(row);
 
                 switch (messageSplit[0]) {
                 case "request-login":
+                	loginResponse = new LoginResponse();              	
                     // Kiểm tra đăng nhập và gửi phản hồi login
                     boolean check = userService.checkUser(username, password);
                     String responseLogin = check ? "login-success," + username : "login-fail";
-                    
+                    System.out.println("Buồn : "+ username);
                     // Gửi phản hồi đăng nhập qua ObjectOutputStream
-                    objectWriter.writeObject(responseLogin);
-                    objectWriter.flush();
+//                    objectWriter.writeObject(responseLogin);
+//                    objectWriter.flush();
                     
                     // Nếu đăng nhập thành công, gửi danh sách token
                     if (check) {
-                        List<Token> tokens = tokenService.getListTokens();
+                    	List<Token> tokens = tokenService.getListTokens();
+                    	loginResponse.setStatus("login-success");
+                    	loginResponse.setTokens(tokens);
+                    	loginResponse.setUserName(username);
+                    	System.out.println(loginResponse.toString());
+                    	 objectWriter.writeObject(loginResponse);
+                         objectWriter.flush();
                         if (tokens != null) {
                             // In danh sách token để kiểm tra
                             for (Token token : tokens) {
                                 System.out.println(token.toString());
                             }
                             // Gửi danh sách token qua ObjectOutputStream
-                            objectWriter.writeObject(tokens);
-                            objectWriter.flush();
+//                            objectWriter.writeObject(tokens);
+//                            objectWriter.flush();
                         } else {
                             out.println("getlistcoin-false");
                         }
@@ -96,7 +112,24 @@ public class ClientHandler extends Thread {
                         objectWriter.writeObject(responseRegister); // Gửi thông báo qua ObjectOutputStream
                         objectWriter.flush();
                         break;
-
+                    case "request-deposit":
+                        System.out.println("Muốn nạp tiền");
+                        break;
+                    case "request-buy-coin":
+                    	Order order = new Order();
+                    	Double price = Double.parseDouble(messageSplit[1]);
+                    	Double quantity_curency = Double.parseDouble(messageSplit[2]);
+                    	order.setPrice(price);
+                    	order.setQuantity(quantity_curency);
+                    	order.setCurrency(messageSplit[3]);
+                    	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                        order.setCreatedAt(currentTime);  	
+                    	order.setUserId(messageSplit[4]);
+                        Order order1 = orderRepository.saveOrder(order);
+                        String responseOder = (order1 != null) ? "oder-success" : "oder-false";
+                        objectWriter.writeObject(responseOder); // Gửi thông báo qua ObjectOutputStream
+                        objectWriter.flush();
+                        break;
                     case "request-getlistcoin" :
 //                        List<Token> tokens = tokenService.getListTokens();
 //                        for (Token token : tokens) {

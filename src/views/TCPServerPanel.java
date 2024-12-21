@@ -41,7 +41,7 @@ public class TCPServerPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Bảng hiển thị thông tin client
-        String[] columnNames = {"IP", "Action", "Connect Time"};
+        String[] columnNames = {"IP","Username", "Action", "Connect Time"};
         tableModel = new DefaultTableModel(columnNames, 0);
         clientTable = new JTable(tableModel);
         clientTable.setBackground(backgroundColor);

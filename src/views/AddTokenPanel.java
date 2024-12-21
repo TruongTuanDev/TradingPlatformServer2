@@ -135,7 +135,7 @@ public class AddTokenPanel extends JPanel {
                 txtNameCoin.setText("");
                 txtSymbol.setText("");
                 txtPrice.setText("");
-                dateChooser.setDate(null);
+//                dateChooser.setDate(null);
                 txtQuantity.setText("");
             } else {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
