@@ -25,6 +25,18 @@ public class UserService {
 		  isValid = userRepository.checklogin(userName,password);
 	      return isValid;
 	    }
+	public boolean updateStatus(String userName,String password) {
+		  boolean isValid = false;
+		  userRepository = new UserRepository();
+		  isValid = userRepository.updateStatus(userName,password);
+	      return isValid;
+	    }
+	public boolean updateStatusFalse(String userName) {
+		  boolean isValid = false;
+		  userRepository = new UserRepository();
+		  isValid = userRepository.updateStatusFalse(userName);
+	      return isValid;
+	    }
 	public List<User> getListUsers() {
 		userRepository = new UserRepository();
 	    List<User> userList = new ArrayList<>(); // Danh sách để lưu tất cả người dùng
