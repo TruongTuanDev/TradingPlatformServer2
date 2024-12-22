@@ -28,9 +28,61 @@ public class OrderRepository {
 	        ps.setTimestamp(7, order.getCreatedAt());
 	      
 	        ps.executeUpdate();
+	        double amount = order.getPrice()*order.getQuantity();
+	        BalanceOrder( order.getUserId(), amount);
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
 	    return order;
 	}
+	public boolean BalanceOrder(String walletId, double amount) {
+        if (amount <= 0) {
+            System.out.println("Số tiền rút phải lớn hơn 0.");
+            return false;
+        }
+
+        try {
+        	con = utils.ConnectDB.getConnection();
+            // Kiểm tra số dư hiện tại của ví
+            String queryCheckBalance = "SELECT balance FROM wallet_transactions WHERE wallet_id = ? ORDER BY created_at DESC LIMIT 1";
+            PreparedStatement checkBalanceStmt = con.prepareStatement(queryCheckBalance);
+            checkBalanceStmt.setString(1, walletId);
+            ResultSet rs = checkBalanceStmt.executeQuery();
+            
+            double currentBalance = 0.0;
+            if (rs.next()) {
+                currentBalance = rs.getDouble("balance");
+            } else {
+                System.out.println("Không tìm thấy ví hoặc ví chưa có giao dịch nào.");
+                return false;
+            }
+
+            // Kiểm tra xem số dư có đủ để rút không
+            if (currentBalance < amount) {
+                System.out.println("Số dư không đủ để thực hiện giao dịch.");
+                return false;
+            }
+
+            // Tính toán số dư mới
+            double newBalance = currentBalance - amount;
+
+            // Thêm giao dịch mới vào bảng wallet_transactions
+            String insertTransaction = "INSERT INTO wallet_transactions (wallet_id, transaction_type, amount, balance) VALUES (?, 'withdrawal', ?, ?)";
+            PreparedStatement insertStmt = con.prepareStatement(insertTransaction);
+            insertStmt.setString(1, walletId);
+            insertStmt.setDouble(2, amount);
+            insertStmt.setDouble(3, newBalance);
+
+            int rowsInserted = insertStmt.executeUpdate();
+
+//            if (rowsInserted > 0) {
+//            	updateWalletBalanceForAll(walletId,newBalance);
+//                System.out.println("Rút tiền thành công! Số dư mới: " + newBalance);
+//                return true;
+//            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi rút tiền: " + e.getMessage());
+        }
+        return false;
+    }
 }

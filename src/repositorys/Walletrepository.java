@@ -18,7 +18,7 @@ public class Walletrepository {
             con = utils.ConnectDB.getConnection();
             
             // Câu truy vấn để lấy balance theo account_id
-            String query = "SELECT balance FROM wallets WHERE account_id = ?";
+            String query = "SELECT balance FROM wallet_transactions WHERE wallet_id = ? ORDER BY created_at DESC LIMIT 1";
             ps = con.prepareStatement(query);
             
             // Gán giá trị account_id vào câu truy vấn
@@ -157,6 +157,41 @@ public class Walletrepository {
             System.err.println("Lỗi khi cập nhật balance: " + e.getMessage());
         }
         return 0;
+    }
+	public double getCurencyQuantity(String accountId,String symbol) {
+        double quantity_curency = 0.0; // Mặc định balance là 0
+        try {
+            // Kết nối đến cơ sở dữ liệu
+            con = utils.ConnectDB.getConnection();
+            
+            // Câu truy vấn để lấy balance theo account_id
+            String query = "SELECT quantity_curency FROM wallets WHERE account_id = ? AND symbol = ?";
+            ps = con.prepareStatement(query);
+            
+            // Gán giá trị account_id vào câu truy vấn
+            ps.setString(1, accountId);
+            ps.setString(2, symbol);
+            // Thực thi câu truy vấn và lấy kết quả
+            rs = ps.executeQuery();
+            
+            // Nếu có kết quả trả về, lấy balance
+            if (rs.next()) {
+            	quantity_curency = rs.getDouble("quantity_curency");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Đảm bảo đóng tài nguyên sau khi sử dụng
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return quantity_curency; // Trả về balance
     }
 	
 }
