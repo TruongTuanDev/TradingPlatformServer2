@@ -24,4 +24,10 @@ public class WalletService {
 		  check = walletRepository.withdrawFromWallet(walletId, amount);
 		  return check;
 	}
+	public double getCurencyQuantity(String account_id, String symbol) {
+		  double quantity_curency = 0;
+		  walletRepository = new Walletrepository();
+		  quantity_curency = walletRepository.getCurencyQuantity(account_id, symbol);
+	      return quantity_curency;
+	  }
 }

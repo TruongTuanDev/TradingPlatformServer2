@@ -146,6 +146,16 @@ public class ClientHandler extends Thread {
                         objectWriter.writeObject(responseWithDraw);
                         objectWriter.flush();
                       break;
+                    case "request-quantity_curency" :
+                    	String account_name = messageSplit[1] ;
+                    	String symbol = messageSplit[2];
+                    	double quantity_curency = walletService.getCurencyQuantity(account_name, symbol);
+                    	String responseQuantityCurency = "quantity_curency-success," + username + "," + String.valueOf(quantity_curency);
+                        
+                        // Gửi phản hồi đăng nhập qua ObjectOutputStream
+                        objectWriter.writeObject(responseQuantityCurency);
+                        objectWriter.flush();
+                      break;
                     default:
                         objectWriter.writeObject("Unexpected command: " + messageSplit[0]);
                         objectWriter.flush();
