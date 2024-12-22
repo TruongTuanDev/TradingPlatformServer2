@@ -16,11 +16,11 @@ import model.LoginResponse;
 import model.Order;
 import model.Token;
 import model.User;
-<<<<<<< HEAD
+
 import repositorys.OrderRepository;
-=======
+
 import repositorys.Walletrepository;
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
+
 import services.TokenService;
 import services.UserService;
 import services.WalletService;
@@ -36,12 +36,12 @@ public class ClientHandler extends Thread {
     private TCPServer server;
     private UserService userService;
     private TokenService tokenService;
-<<<<<<< HEAD
+
     private LoginResponse  loginResponse;
     private OrderRepository orderRepository;
-=======
+
     private WalletService walletService;
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
+
 
     public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
         this.clientSocket = socket;
@@ -54,13 +54,13 @@ public class ClientHandler extends Thread {
     public void run() {
         userService = new UserService();
         tokenService = new TokenService();
-<<<<<<< HEAD
+
         orderRepository = new OrderRepository();
         
-=======
+
         walletService = new WalletService();
         String currentUsername = null;
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
+
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ObjectOutputStream objectWriter = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -91,22 +91,19 @@ public class ClientHandler extends Thread {
                 	loginResponse = new LoginResponse();              	
                     // Kiểm tra đăng nhập và gửi phản hồi login
                     boolean check = userService.checkUser(username, password);
-<<<<<<< HEAD
-                    String responseLogin = check ? "login-success," + username : "login-fail";
-                    System.out.println("Buồn : "+ username);
-=======
+
                     double balance = walletService.getBalanceByAccountId(username);
                     currentUsername = username;
                     String responseLogin = check ? "login-success," + username + "," + String.valueOf(balance) : "login-fail";
                     
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
+
                     // Gửi phản hồi đăng nhập qua ObjectOutputStream
 //                    objectWriter.writeObject(responseLogin);
 //                    objectWriter.flush();
                     
                     // Nếu đăng nhập thành công, gửi danh sách token
                     if (check) {
-<<<<<<< HEAD
+
                     	List<Token> tokens = tokenService.getListTokens();
                     	loginResponse.setStatus("login-success");
                     	loginResponse.setTokens(tokens);
@@ -114,11 +111,10 @@ public class ClientHandler extends Thread {
                     	System.out.println(loginResponse.toString());
                     	 objectWriter.writeObject(loginResponse);
                          objectWriter.flush();
-=======
+
                     	UserListPanel list = new UserListPanel();
                     	list.updateUserStatus(username, true);
-                        List<Token> tokens = tokenService.getListTokens();
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
+   
                         if (tokens != null) {
                             // In danh sách token để kiểm tra
                             for (Token token : tokens) {
@@ -140,9 +136,7 @@ public class ClientHandler extends Thread {
                         objectWriter.writeObject(responseRegister); // Gửi thông báo qua ObjectOutputStream
                         objectWriter.flush();
                         break;
-                    case "request-deposit":
-                        System.out.println("Muốn nạp tiền");
-                        break;
+                   
                     case "request-buy-coin":
                     	Order order = new Order();
                     	Double price = Double.parseDouble(messageSplit[1]);

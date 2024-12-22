@@ -13,7 +13,7 @@ public class MainServerUI extends JFrame {
         setLocationRelativeTo(null);
 
         // Tạo JTabbedPane
-        JTabbedPane tabbedPane = new JTabbedPane();
+        JTabbedPane tabbedPane = new JTabbedPane(); 
         // Tab 1: Danh sách người dùng
         UserListPanel userListPanel = new UserListPanel();
         tabbedPane.addTab("User List", userListPanel);
