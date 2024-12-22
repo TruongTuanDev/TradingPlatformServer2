@@ -16,11 +16,8 @@ import model.LoginResponse;
 import model.Order;
 import model.Token;
 import model.User;
-<<<<<<< HEAD
 import repositorys.OrderRepository;
-=======
 import repositorys.Walletrepository;
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
 import services.TokenService;
 import services.UserService;
 import services.WalletService;
@@ -36,12 +33,9 @@ public class ClientHandler extends Thread {
     private TCPServer server;
     private UserService userService;
     private TokenService tokenService;
-<<<<<<< HEAD
     private LoginResponse  loginResponse;
     private OrderRepository orderRepository;
-=======
     private WalletService walletService;
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
 
     public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
         this.clientSocket = socket;
@@ -54,13 +48,9 @@ public class ClientHandler extends Thread {
     public void run() {
         userService = new UserService();
         tokenService = new TokenService();
-<<<<<<< HEAD
         orderRepository = new OrderRepository();
-        
-=======
         walletService = new WalletService();
         String currentUsername = null;
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ObjectOutputStream objectWriter = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -91,42 +81,39 @@ public class ClientHandler extends Thread {
                 	loginResponse = new LoginResponse();              	
                     // Kiểm tra đăng nhập và gửi phản hồi login
                     boolean check = userService.checkUser(username, password);
-<<<<<<< HEAD
-                    String responseLogin = check ? "login-success," + username : "login-fail";
+    
                     System.out.println("Buồn : "+ username);
-=======
                     double balance = walletService.getBalanceByAccountId(username);
                     currentUsername = username;
                     String responseLogin = check ? "login-success," + username + "," + String.valueOf(balance) : "login-fail";
                     
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
                     // Gửi phản hồi đăng nhập qua ObjectOutputStream
 //                    objectWriter.writeObject(responseLogin);
 //                    objectWriter.flush();
                     
                     // Nếu đăng nhập thành công, gửi danh sách token
                     if (check) {
-<<<<<<< HEAD
+
                     	List<Token> tokens = tokenService.getListTokens();
                     	loginResponse.setStatus("login-success");
                     	loginResponse.setTokens(tokens);
                     	loginResponse.setUserName(username);
                     	System.out.println(loginResponse.toString());
-                    	 objectWriter.writeObject(loginResponse);
+                    	 objectWriter.writeObject(responseLogin);
                          objectWriter.flush();
-=======
+
                     	UserListPanel list = new UserListPanel();
                     	list.updateUserStatus(username, true);
-                        List<Token> tokens = tokenService.getListTokens();
->>>>>>> f019edbc10a75978f31bbc4e3451d1cd6169fa05
+                       
+
                         if (tokens != null) {
                             // In danh sách token để kiểm tra
                             for (Token token : tokens) {
                                 System.out.println(token.toString());
                             }
-                            // Gửi danh sách token qua ObjectOutputStream
-//                            objectWriter.writeObject(tokens);
-//                            objectWriter.flush();
+//                             Gửi danh sách token qua ObjectOutputStream
+                            objectWriter.writeObject(tokens);
+                            objectWriter.flush();
                         } else {
                             out.println("getlistcoin-false");
                         }
@@ -140,9 +127,7 @@ public class ClientHandler extends Thread {
                         objectWriter.writeObject(responseRegister); // Gửi thông báo qua ObjectOutputStream
                         objectWriter.flush();
                         break;
-                    case "request-deposit":
-                        System.out.println("Muốn nạp tiền");
-                        break;
+                    
                     case "request-buy-coin":
                     	Order order = new Order();
                     	Double price = Double.parseDouble(messageSplit[1]);
@@ -150,12 +135,29 @@ public class ClientHandler extends Thread {
                     	order.setPrice(price);
                     	order.setQuantity(quantity_curency);
                     	order.setCurrency(messageSplit[3]);
+                    	order.setOrderType("buy");
                     	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
                         order.setCreatedAt(currentTime);  	
-                    	order.setUserId(messageSplit[4]);
+                    	order.setUserId(messageSplit[5]);
                         Order order1 = orderRepository.saveOrder(order);
-                        String responseOder = (order1 != null) ? "oder-success" : "oder-false";
+                        String responseOder = (order1 != null) ? "buy-success," : "buy-false";
                         objectWriter.writeObject(responseOder); // Gửi thông báo qua ObjectOutputStream
+                        objectWriter.flush();
+                        break;
+                    case "request-sell-coin":
+                    	Order orderSell = new Order();
+                    	Double priceSell = Double.parseDouble(messageSplit[1]);
+                    	Double quantity_curencySell = Double.parseDouble(messageSplit[2]);
+                    	orderSell.setPrice(priceSell);
+                    	orderSell.setQuantity(quantity_curencySell);
+                    	orderSell.setCurrency(messageSplit[3]);
+                    	orderSell.setOrderType("sell");
+                    	Timestamp currentTimeSell = new Timestamp(System.currentTimeMillis());
+                        orderSell.setCreatedAt(currentTimeSell);  	
+                    	orderSell.setUserId(messageSplit[5]);
+                        Order order1Sell = orderRepository.saveOrder(orderSell);
+                        String responseOderSell = (order1Sell != null) ? "sell-success," : "sell-false";
+                        objectWriter.writeObject(responseOderSell); // Gửi thông báo qua ObjectOutputStream
                         objectWriter.flush();
                         break;
                     case "request-getlistcoin" :
@@ -176,8 +178,8 @@ public class ClientHandler extends Thread {
                     	
                     	
                     case "request-deposit" :
-                    	double amount_deposit =Double.parseDouble(messageSplit[1]) ;
-                    	String wallet_iddeposit = messageSplit[2];
+                    	double amount_deposit =Double.parseDouble(messageSplit[2]) ;
+                    	String wallet_iddeposit = messageSplit[1];
                     	boolean deposit = walletService.depositToWallet(wallet_iddeposit, amount_deposit);
                     	double balance_deposit = walletService.getBalanceByAccountId(wallet_iddeposit);
                     	String responseDeposit = deposit ? "deposit-success," + username + "," + String.valueOf(balance_deposit) : "deposit-fail";
@@ -200,8 +202,8 @@ public class ClientHandler extends Thread {
                     case "request-quantity_curency" :
                     	String account_name = messageSplit[1] ;
                     	String symbol = messageSplit[2];
-                    	double quantity_curency = walletService.getCurencyQuantity(account_name, symbol);
-                    	String responseQuantityCurency = "quantity_curency-success," + username + "," + String.valueOf(quantity_curency);
+                    	double quantity_curency1 = walletService.getCurencyQuantity(account_name, symbol);
+                    	String responseQuantityCurency = "quantity_curency-success," + username + "," + String.valueOf(quantity_curency1);
                         
                         // Gửi phản hồi đăng nhập qua ObjectOutputStream
                         objectWriter.writeObject(responseQuantityCurency);

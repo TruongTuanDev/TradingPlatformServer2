@@ -18,7 +18,7 @@ public class Walletrepository {
             con = utils.ConnectDB.getConnection();
             
             // Câu truy vấn để lấy balance theo account_id
-            String query = "SELECT balance FROM wallets WHERE account_id = ?";
+            String query = "SELECT balance FROM wallet_transactions WHERE wallet_id = ? ORDER BY created_at DESC LIMIT 1";
             ps = con.prepareStatement(query);
             
             // Gán giá trị account_id vào câu truy vấn
