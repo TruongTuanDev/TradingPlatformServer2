@@ -16,16 +16,10 @@ import model.LoginResponse;
 import model.Order;
 import model.Token;
 import model.User;
-<<<<<<< HEAD
 
 import repositorys.OrderRepository;
-
 import repositorys.Walletrepository;
 
-=======
-import repositorys.OrderRepository;
-import repositorys.Walletrepository;
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
 import services.TokenService;
 import services.UserService;
 import services.WalletService;
@@ -41,18 +35,11 @@ public class ClientHandler extends Thread {
     private TCPServer server;
     private UserService userService;
     private TokenService tokenService;
-<<<<<<< HEAD
 
     private LoginResponse  loginResponse;
     private OrderRepository orderRepository;
-
     private WalletService walletService;
 
-=======
-    private LoginResponse  loginResponse;
-    private OrderRepository orderRepository;
-    private WalletService walletService;
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
 
     public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
         this.clientSocket = socket;
@@ -65,19 +52,11 @@ public class ClientHandler extends Thread {
     public void run() {
         userService = new UserService();
         tokenService = new TokenService();
-<<<<<<< HEAD
 
         orderRepository = new OrderRepository();
-        
-
         walletService = new WalletService();
         String currentUsername = null;
 
-=======
-        orderRepository = new OrderRepository();
-        walletService = new WalletService();
-        String currentUsername = null;
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ObjectOutputStream objectWriter = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -108,20 +87,11 @@ public class ClientHandler extends Thread {
                 	loginResponse = new LoginResponse();              	
                     // Kiểm tra đăng nhập và gửi phản hồi login
                     boolean check = userService.checkUser(username, password);
-<<<<<<< HEAD
 
-=======
-    
-                    System.out.println("Buồn : "+ username);
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
                     double balance = walletService.getBalanceByAccountId(username);
                     currentUsername = username;
                     String responseLogin = check ? "login-success," + username + "," + String.valueOf(balance) : "login-fail";
                     
-<<<<<<< HEAD
-
-=======
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
                     // Gửi phản hồi đăng nhập qua ObjectOutputStream
 //                    objectWriter.writeObject(responseLogin);
 //                    objectWriter.flush();
@@ -139,12 +109,7 @@ public class ClientHandler extends Thread {
 
                     	UserListPanel list = new UserListPanel();
                     	list.updateUserStatus(username, true);
-<<<<<<< HEAD
-   
-=======
-                       
 
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
                         if (tokens != null) {
                             // In danh sách token để kiểm tra
                             for (Token token : tokens) {
@@ -166,11 +131,6 @@ public class ClientHandler extends Thread {
                         objectWriter.writeObject(responseRegister); // Gửi thông báo qua ObjectOutputStream
                         objectWriter.flush();
                         break;
-<<<<<<< HEAD
-                   
-=======
-                    
->>>>>>> 559b586efac908cd4771ed37cfe642467126d82e
                     case "request-buy-coin":
                     	Order order = new Order();
                     	Double price = Double.parseDouble(messageSplit[1]);
@@ -179,9 +139,11 @@ public class ClientHandler extends Thread {
                     	order.setQuantity(quantity_curency);
                     	order.setCurrency(messageSplit[3]);
                     	order.setOrderType("buy");
+                    	order.setStatus("wait");
                     	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
                         order.setCreatedAt(currentTime);  	
                     	order.setUserId(messageSplit[5]);
+                    	System.out.println("Mua với chúng tôi : "+order.toString());
                         Order order1 = orderRepository.saveOrder(order);
                         String responseOder = (order1 != null) ? "buy-success," : "buy-false";
                         objectWriter.writeObject(responseOder); // Gửi thông báo qua ObjectOutputStream
@@ -195,6 +157,7 @@ public class ClientHandler extends Thread {
                     	orderSell.setQuantity(quantity_curencySell);
                     	orderSell.setCurrency(messageSplit[3]);
                     	orderSell.setOrderType("sell");
+                    	orderSell.setStatus("wait");
                     	Timestamp currentTimeSell = new Timestamp(System.currentTimeMillis());
                         orderSell.setCreatedAt(currentTimeSell);  	
                     	orderSell.setUserId(messageSplit[5]);
