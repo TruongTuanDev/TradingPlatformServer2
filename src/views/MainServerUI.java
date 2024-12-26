@@ -11,7 +11,7 @@ public class MainServerUI extends JFrame {
         setSize(1091, 681);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
+      
         // Tạo JTabbedPane
         JTabbedPane tabbedPane = new JTabbedPane(); 
         // Tab 1: Danh sách người dùng
@@ -27,7 +27,7 @@ public class MainServerUI extends JFrame {
         tabbedPane.addTab("Add Info", addtoken);
 
         // Thêm JTabbedPane vào cửa sổ
-        getContentPane().add(tabbedPane);
+        getContentPane().add(tabbedPane);   
     }
 
     public static void main(String[] args) {
