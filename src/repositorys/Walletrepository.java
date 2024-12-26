@@ -193,5 +193,57 @@ public class Walletrepository {
 
         return quantity_curency; // Trả về balance
     }
+	public boolean updateBalanceByUsername(String username, double quantity) {
+	    try {
+	        // Kết nối đến cơ sở dữ liệu
+	        con = utils.ConnectDB.getConnection();
+
+	        // Truy vấn để lấy balance hiện tại theo username
+	        String selectQuery = "SELECT balance FROM wallet_transactions WHERE wallet_id = ? ORDER BY created_at DESC LIMIT 1";
+	        ps = con.prepareStatement(selectQuery);
+	        ps.setString(1, username); // Gán username làm wallet_id
+	        rs = ps.executeQuery();
+
+	        double currentBalance = 0.0;
+
+	        if (rs.next()) {
+	            currentBalance = rs.getDouble("balance"); // Lấy số dư hiện tại
+	        } else {
+	            // Nếu không tìm thấy tài khoản, trả về false
+	            return false;
+	        }
+
+	        // Đóng PreparedStatement và ResultSet cũ để tránh lỗi
+	        rs.close();
+	        ps.close();
+
+	        // Tính toán số dư mới
+	        double updatedBalance = currentBalance + quantity;
+
+	        // Chèn giao dịch mới với số dư đã cập nhật
+	        String insertQuery = "INSERT INTO wallet_transactions (wallet_id, balance, created_at) VALUES (?, ?, NOW())";
+	        ps = con.prepareStatement(insertQuery);
+	        ps.setString(1, username);
+	        ps.setDouble(2, updatedBalance);
+
+	        // Thực thi câu lệnh chèn
+	        int rowsAffected = ps.executeUpdate();
+	        return rowsAffected > 0; // Trả về true nếu chèn thành công, ngược lại false
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false; // Trả về false nếu có lỗi xảy ra
+	    } finally {
+	        // Đảm bảo đóng tài nguyên sau khi sử dụng
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+	
 	
 }
