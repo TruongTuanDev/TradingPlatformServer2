@@ -39,6 +39,7 @@ public class ClientHandler extends Thread {
     private LoginResponse  loginResponse;
     private OrderRepository orderRepository;
     private WalletService walletService;
+    private Walletrepository walletrepository;
 
 
     public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
@@ -55,6 +56,8 @@ public class ClientHandler extends Thread {
 
         orderRepository = new OrderRepository();
         walletService = new WalletService();
+        walletrepository = new Walletrepository();
+        
         String currentUsername = null;
 
         try {
@@ -215,6 +218,19 @@ public class ClientHandler extends Thread {
                         objectWriter.writeObject(responseQuantityCurency);
                         objectWriter.flush();
                       break;
+                    case "request-sendmoney" :
+                    	String uname = messageSplit[1] ;
+                    	Double quantity = Double.parseDouble(messageSplit[2]);
+                    	
+                    	Boolean checki = walletrepository.updateBalanceByUsername(uname, quantity);
+                    	System.out.println("Kiểm tra tài khoản "+checki);
+                    	String responseSend = checki ? "sendmony-success," : "sendmony-false";
+
+                        // Gửi phản hồi đăng nhập qua ObjectOutputStream
+                        objectWriter.writeObject(responseSend);
+                        objectWriter.flush();
+                      break;
+                      
                     default:
                         objectWriter.writeObject("Unexpected command: " + messageSplit[0]);
                         objectWriter.flush();
